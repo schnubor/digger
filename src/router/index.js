@@ -5,26 +5,23 @@ import Vinyl from '../views/Vinyl.vue'
 
 Vue.use(VueRouter)
 
-const Foo = {
-    template: '<div>foo</div>'
-}
-const Bar = {
-    template: '<div>bar</div>'
-}
-
 export default new VueRouter({
     mode: 'history',
     routes: [{
         path: '/',
+        name: 'home',
         component: Home
     }, {
         path: '/random',
+        name: 'random',
         component: Vinyl
     }, {
-        path: '/genre',
+        path: '/genre/:genre',
+        name: 'genre',
         component: Vinyl
     }, {
-        path: '/artist',
+        path: '/artist/:artist',
+        name: 'artist',
         component: Vinyl
     }, {
         path: '*',

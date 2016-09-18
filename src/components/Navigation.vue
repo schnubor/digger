@@ -1,9 +1,8 @@
 <template lang="html">
     <nav class="nav nav-inline">
-        <a class="nav-link active" href="#">Active</a>
-        <a class="nav-link" href="#">Link</a>
-        <a class="nav-link" href="#">Link</a>
-        <a class="nav-link disabled" href="#">Disabled</a>
+        
+        <router-link class="nav-link" to="/"><button type="button" class="btn btn-sm btn-outline-secondary">Back to selection</button></router-link>
+        <hr>
     </nav>
 </template>
 

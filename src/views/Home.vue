@@ -30,7 +30,7 @@
                         </select>
                     </div>
                     <div class="card-footer">
-                        <router-link to="/genre"><button type="button" class="btn btn-block btn-outline-success">{{ genre }}</button></router-link>
+                        <router-link :to="genrePath"><button type="button" class="btn btn-block btn-outline-success">{{ genre }}</button></router-link>
                     </div>
                 </div>
                 <div class="card">
@@ -40,7 +40,7 @@
 
                     </div>
                     <div class="card-footer" style="margin-top: 2px;">
-                        <router-link to="/artist"><button type="button" class="btn btn-outline-warning btn-block" :disabled="disabledArtistBtn">{{ artist ? artist : 'Artist' }}</button></router-link>
+                        <router-link :to="artistPath"><button type="button" class="btn btn-outline-warning btn-block" :disabled="disabledArtistBtn">{{ artist ? artist : 'Artist' }}</button></router-link>
                     </div>
                 </div>
             </div>
@@ -60,6 +60,12 @@ export default {
     computed: {
         disabledArtistBtn() {
             return this.artist ? false : true;
+        },
+        genrePath() {
+            return '/genre/' + this.genre;
+        },
+        artistPath() {
+            return '/artist/' + this.artist;
         }
     },
     ready() {},
