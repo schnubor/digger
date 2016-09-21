@@ -1,8 +1,5 @@
 <template lang="html">
-    <div class="container">
-        <div class="row text-xs-center">
-            <p class="lead" style="margin-bottom: 2rem; margin-top: 3rem;">Hey Digger, dig me some ...</p>
-        </div>
+    <div>
         <div class="card-deck-wrapper">
             <div class="card-deck">
                 <div class="card">
@@ -75,7 +72,10 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
+    hr {
+        margin-bottom: 1.6rem;
+    }
     a:hover {
         text-decoration: none;
     }

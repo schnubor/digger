@@ -1,11 +1,11 @@
 <template lang="html">
-    <div class="container">
+    <div>
         <nav class="nav nav-inline">
             <router-link class="nav-link" to="/"><button type="button" class="btn btn-sm btn-outline-secondary">Back to selection</button></router-link>
             <span class="nav-link text-muted" v-if="isGenre"><small>Genre / {{ $route.params.genre }}</small></span>
             <span class="nav-link text-muted" v-if="isArtist"><small>Artist / {{ $route.params.artist }}</small></span>
             <span class="nav-link text-muted" v-if="isRandom"><small>Random vinyl</small></span>
-            <hr>
+            <hr class="m-t-2">
         </nav>
 
         <div class="spinnerWrapper" v-if="!fetched">
@@ -33,23 +33,24 @@
             </div>
         </div>
 
-
+        <playlist :vinyls="playlist" v-if="playlist.length > 0"></playlist>
     </div>
 </template>
 
 <script>
 import Spinner from '../components/Spinner.vue'
+import Playlist from '../components/Playlist.vue'
 
 export default {
   data () {
     return {
+        token: 'oXTNwXoHFojhFqXDzcLIfXjnzoiBkgTHYnIAiynU',
         fetched: false,
         error: false,
         vinylData: {},
-        vinylList: {
-            page: 0
-        },
-        rateLimit: 10000
+        playlist: [],
+        rateLimit: 15000,
+        playlistMaxLength: 4
     }
   },
   computed: {
@@ -72,18 +73,34 @@ export default {
   ready () {},
   attached () {},
   methods: {
+      setSearchUrl(name) {
+          let url = '';
+          let page = Math.floor(Math.random() * (1000 - 1) + 1) + '&per_page=100';;
+
+          switch(name) {
+              case 'artist':
+                  page = '1&per_page=100';
+                  url = 'https://api.discogs.com/database/search?type=release&format=vinyl&artist=' + this.$route.params.artist + '&token=' + this.token + '&page=' + page;
+                  break;
+              case 'genre':
+                  url = 'https://api.discogs.com/database/search?type=release&format=vinyl&genre=' + this.$route.params.genre + '&token=' + this.token + '&page=' + page;
+                  break;
+              default:
+                  url = 'https://api.discogs.com/database/search?type=release&format=vinyl&token=' + this.token + '&page=' + page;
+                  break;
+          }
+
+          return url;
+      },
+      newVinyl() {
+          setTimeout(() => {
+              this.fetchVinylList();
+          }, this.rateLimit);
+      },
       fetchVinylList() {
           console.log("fetching new vinyl...");
-          this.fetched = false;
 
-          let url = '';
-
-          if(this.$route.params.genre) var page = Math.floor(Math.random() * (1000 - 1) + 1) + '&per_page=100';
-          if(this.$route.params.artist) var page = '1&per_page=100';
-
-          if(this.$route.params.artist) url = 'https://api.discogs.com/database/search?type=release&format=vinyl&artist=' + this.$route.params.artist + '&token=oXTNwXoHFojhFqXDzcLIfXjnzoiBkgTHYnIAiynU&page=' + page;
-          if(this.$route.params.genre) url = 'https://api.discogs.com/database/search?type=release&format=vinyl&genre=' + this.$route.params.genre + '&token=oXTNwXoHFojhFqXDzcLIfXjnzoiBkgTHYnIAiynU&page=' + page;
-          if(this.$route.params.random) url = 'https://api.discogs.com/database/search?type=release&format=vinyl&token=oXTNwXoHFojhFqXDzcLIfXjnzoiBkgTHYnIAiynU&page=' + page;
+          let url = this.setSearchUrl(this.$route.name);
 
           var request = new XMLHttpRequest();
 
@@ -100,15 +117,13 @@ export default {
               } else {
                   // We reached our target server, but it returned an error
                   this.error = true;
+                  this.newVinyl();
               }
           };
 
           request.onerror = () => {
-              console.log('god damn...');
               this.error = true;
-              setTimeout(() => {
-                  this.fetchVinylList();
-              }, this.rateLimit);
+              this.newVinyl();
           };
 
           request.send();
@@ -123,47 +138,52 @@ export default {
                   // Success!
                   this.error = false;
                   var resp = JSON.parse(request.responseText);
-                  console.log(resp);
                   if(resp.videos && resp.images) {
-                      this.vinylData = resp;
-                      this.vinylData.videoUri = 'http://www.youtube.com/embed/' + resp.videos[0].uri.substr(resp.videos[0].uri.length - 11) + '?autoplay=1';
-                      this.fetched = true;
+                      if(!this.fetched){
+                          this.vinylData = resp;
+                          this.vinylData.videoUri = 'http://www.youtube.com/embed/' + resp.videos[0].uri.substr(resp.videos[0].uri.length - 11) + '?autoplay=1';
+                          this.fetched = true;
+                          this.newVinyl();
+                      }
+                      else{
+                          // Fill playlist
+                          if(this.playlist.length < this.playlistMaxLength) {
+                              this.playlist.push(resp);
+                              this.newVinyl();
+                          }
+                      }
                   }
                   else{
-                      setTimeout(() => {
-                          this.fetchVinylList();
-                      }, this.rateLimit);
+                      console.log('No cover and/or videos...');
+                      this.newVinyl();
                   }
               } else {
                   // We reached our target server, but it returned an error
                   this.error = true;
                   this.fetched = false;
+                  this.newVinyl();
               }
           };
 
           request.onerror = () => {
-              console.log('god damn...');
-              setTimeout(() => {
-                  this.fetchVinylList();
-              }, this.rateLimit);
+              this.newVinyl();
               this.error = true;
               this.fetched = false;
           };
 
           request.send();
       }
-
-
   },
   components: {
-      spinner: Spinner
+      spinner: Spinner,
+      playlist: Playlist
   }
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
     .spinnerWrapper {
-        margin-top: 100px;
+        margin: 100px 0;
     }
     .videoWrapper {
     	position: relative;

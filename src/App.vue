@@ -1,12 +1,20 @@
 <template>
 <div id="app">
-    <div class="conainer">
+    <div class="container">
         <header>
             <router-link to="/"><h1>Digger</h1></router-link>
-            <h2>Digging from <span :key="loading">{{ loading ? '... uhm ...' : count }}</span> vinyls.</h2>
         </header>
+        <hr class="m-b-2">
+        <router-view class="view"></router-view>
+        <hr class="m-t-2">
+        <footer>
+            <small>
+                Digging from <span :key="loading">{{ loading ? '... uhm ...' : count }}</span> vinyls using the <a href="https://www.discogs.com/developers/" target="_blank">Discogs API</a>.
+                Build with <a href="http://rc.vuejs.org" target="_blank">Vue.js v2.0</a> by <a href="http://twitter.com/schnubor" target="_blank">@schnubor</a>.
+                Source on <a href="http://github.com/schnubor/digger" target="_blank">Github</a>.
+            </small>
+        </footer>
     </div>
-    <router-view class="view"></router-view>
 </div>
 </template>
 
@@ -48,7 +56,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 body {
     font-family: Helvetica, sans-serif;
     padding: 0;
@@ -56,7 +64,17 @@ body {
 }
 
 header {
-    text-align: center;
+    width: 100%;
+    display: inline-block;
+
+    &.after {
+        content: ".";
+        display: block;
+        clear: both;
+        visibility: hidden;
+        line-height: 0;
+        height: 0;
+    }
 
     a {
         text-decoration: none;
@@ -71,22 +89,33 @@ header {
     h1 {
         font-size: 72px;
         font-family: 'Playball', cursive;
-        margin-bottom: 10px;
+        margin-bottom: 0px;
         margin-top: 50px;
+        float: left;
     }
     h2 {
         font-family: 'Lato', sans-serif;
         font-size: 18px;
         font-weight: 100;
-        border-top: 1px solid #d6d6d6;
-        padding-top: 20px;
+        margin-top: 110px;
         width: 300px;
-        margin: 30px auto;
+        float: right;
+        text-align: right;
+        margin-bottom: 0;
 
         span {
-            color: red;
+            color: #373a3c;
             font-weight: normal;
         }
+    }
+}
+
+footer {
+    color: #8a9399;
+
+    span {
+        color: #373a3c;
+        font-weight: bold;
     }
 }
 
