@@ -46,10 +46,6 @@ export default {
                 }
             };
 
-            request.onerror = () => {
-                console.log('fock!');
-            };
-
             request.send();
         }
     }

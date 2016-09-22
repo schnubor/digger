@@ -21,10 +21,9 @@
                         <p class="card-text text-muted"><small>by {{ vinylData.artists[0].name }}</small></p>
                     </div>
                     <div class="card-footer">
-                        Discogs
+                        <a :href="vinylData.uri">{{ vinylData.lowest_price }}$ on Discogs</a>
                     </div>
                 </div>
-                <button type="button" class="btn btn-outline-danger btn-lg btn-block" v-on:click="fetchVinylList">Nope, next!</button>
             </div>
             <div class="col-md-9">
                 <div class="videoWrapper">
